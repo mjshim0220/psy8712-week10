@@ -24,19 +24,19 @@ ggplot(gss_tbl, aes(x = `work hours`)) +
 set.seed(0220)
 train_spilit <- createDataPartition(gss_tbl$`work hours`, 
                                   p = 0.75, 
-                                  list = FALSE)
-train <- gss_tbl[train_spilit, ]
-test <- gss_tbl[-train_spilit, ]
+                                  list = FALSE) #spilt the data into 75%/25%
+train <- gss_tbl[train_spilit, ] #save 75% of df for ML
+test <- gss_tbl[-train_spilit, ] #save 25% of df for test 
 
 ctrl<-trainControl(method = "cv",
-                  number = 10)   
+                  number = 10)   # get estimates of both 10-fold CV and holdout CV
 
 #OLS regression model
 ols_model <- train(`work hours` ~ ., 
                    data = train, 
                    method = "lm",
                    trControl = ctrl,
-                   preProcess="medianImpute",
+                   preProcess="medianImpute", #median imputation
                    na.action=na.pass)
 
 # Elastic Net model
@@ -62,9 +62,41 @@ xgb_model <- train(`work hours` ~ .,
                    preProcess = "medianImpute",
                    na.action = na.pass)
 
-#Publication
 #CV prediction
 ols_pred <- predict(ols_model, test, na.action=na.pass)
 net_pred <- predict(elastic_net_model, test, na.action=na.pass)
 rf_pred <- predict(rf_model, test, na.action=na.pass)
 xgb_pred <- predict(xgb_model, test, na.action=na.pass)
+
+# Evaluate holdout CV
+ols_rmse<-cor(test$`work hours`, ols_pred)^2
+net_rmse<-cor(test$`work hours`, net_pred)^2
+rf_rmse<-cor(test$`work hours`, rf_pred)^2
+xgb_rmse<-cor(test$`work hours`, xgb_pred)^2
+
+#Publication
+table1_tbl<-tibble(
+  algo = c( "OLS regression", "Elastic net", "Random forest", "eXtreme Gradient Boosting"),
+  cv_rsq= c(
+    round(ols_model$results$Rsquared[1],2),
+    round(elastic_net_model$results$Rsquared[1],2),
+    round(rf_model$results$Rsquared[1],2),
+    round(xgb_model$results$Rsquared[1],2)
+  ), #format is missing....
+  ho_rsq=c(
+    round(ols_rmse,2),
+    round(net_rmse,2),
+    round(rf_rmse,2),
+    round(xgb_rmse,2)
+  )
+)
+
+table1_tbl
+
+
+#Answer the following questions in comments in this section, at the end of your file:
+##1. How did your results change between models? Why do you think this happened, specifically?
+####  
+
+How did you results change between k-fold CV and holdout CV? Why do you think this happened, specifically?
+  Among the four models, which would you choose for a real-life prediction problem, and why? Are there tradeoffs? Write up to a paragraph.
