@@ -96,7 +96,10 @@ table1_tbl
 
 #Answer the following questions in comments in this section, at the end of your file:
 ##1. How did your results change between models? Why do you think this happened, specifically?
-####  
+####  OLS Regression performed the least (0.08), while the other models demonstrated better performance (0.51, 0.33, and 0.53, respectively).OLS regression assumes a linear relationship between DV and IVs. This may have limitation to explain the existing dataset. Therefore, other models produce better fit.
 
-How did you results change between k-fold CV and holdout CV? Why do you think this happened, specifically?
-  Among the four models, which would you choose for a real-life prediction problem, and why? Are there tradeoffs? Write up to a paragraph.
+##2. How did you results change between k-fold CV and holdout CV? Why do you think this happened, specifically?
+####Except the Elastic net model, R-squred values in other models are differed. This implies Elastic net model generalizes well across different data subsets.
+
+##3. Among the four models, which would you choose for a real-life prediction problem, and why? Are there tradeoffs? Write up to a paragraph.
+####I would choose Elastic net model in this case. Elastic Net present consistent and well performance across both k-fold CV and holdout CV. However, this model has limitation dealing with the relationship which is about more nonlinear patterns compared to Random forest or XGb model.
